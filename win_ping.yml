@@ -1,7 +1,7 @@
 ---
-- name: Prueba de conectividad WinRM a Windows
+- name: Probar conectividad Windows
   hosts: all
   gather_facts: no
   tasks:
-    - name: Ping Windows
-      win_ping:
+    - name: Hacer ping a Windows
+      ansible.builtin.win_ping:
