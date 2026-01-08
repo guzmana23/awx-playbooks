@@ -1,18 +1,19 @@
 ---
 - name: Verificar actualizaciones de Windows
   hosts: all
-  gather_facts: no
+  gather_facts: false
+  become: yes                  # Indica que se usará elevación
+  become_method: runas         # Método de elevación para Windows
+  become_user: awxupdate       # Usuario administrador local
   tasks:
     - name: Obtener actualizaciones pendientes
       win_shell: |
         Import-Module PSWindowsUpdate
         Get-WindowsUpdate -MicrosoftUpdate -IgnoreReboot |
-        Select-Object KBArticleID, Title, Size, Classification |
-        ConvertTo-Json
+          Select-Object KBArticleID,Title,Size,Classification |
+          ConvertTo-Json
       register: updates
-      become: yes
-      become_method: runas
 
-    - name: Mostrar actualizaciones pendientes
+    - name: Mostrar actualizaciones
       debug:
         var: updates.stdout
