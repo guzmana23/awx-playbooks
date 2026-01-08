@@ -1,14 +1,18 @@
 ---
 - name: Verificar actualizaciones de Windows
   hosts: all
-  gather_facts: false
+  gather_facts: no
   tasks:
     - name: Obtener actualizaciones pendientes
       win_shell: |
         Import-Module PSWindowsUpdate
-        Get-WindowsUpdate -MicrosoftUpdate -IgnoreReboot | Select-Object -Property KBArticleID,Title,Size,Classification | ConvertTo-Json
+        Get-WindowsUpdate -MicrosoftUpdate -IgnoreReboot |
+        Select-Object KBArticleID, Title, Size, Classification |
+        ConvertTo-Json
       register: updates
+      become: yes
+      become_method: runas
 
-    - name: Mostrar actualizaciones
+    - name: Mostrar actualizaciones pendientes
       debug:
         var: updates.stdout
