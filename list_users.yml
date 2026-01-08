@@ -1,0 +1,14 @@
+---
+- name: Listar usuarios locales en Windows
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Listar usuarios locales
+      win_shell: Get-LocalUser | Select-Object Name, Enabled
+      register: local_users
+
+    - name: Mostrar usuarios locales
+      debug:
+        var: local_users.stdout_lines
