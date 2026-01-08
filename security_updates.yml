@@ -1,6 +1,6 @@
 ---
 - name: Reporte de actualizaciones de seguridad en Windows
-  hosts: windows
+  hosts: all
   gather_facts: false
 
   vars:
