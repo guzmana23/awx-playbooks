@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: false
   vars:
-    log_path: "C:\\Logs\\SecurityUpdates.txt"  # Ruta del log en cada host
+    log_path: "C:\\Logs\\SecurityUpdates.txt"
 
   tasks:
 
@@ -13,6 +13,18 @@
         state: directory
       become: yes
       become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+
+    - name: Instalar módulo PSWindowsUpdate si no está presente
+      win_shell: |
+        if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+            Install-Module -Name PSWindowsUpdate -Force -Scope AllUsers
+        }
+      args:
+        executable: powershell
+      become: yes
+      become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
 
     - name: Listar actualizaciones de seguridad disponibles
       win_shell: |
@@ -21,15 +33,21 @@
         Select-Object KBArticleID, Title, Size, Classification |
         Format-Table -AutoSize |
         Out-File "{{ log_path }}"
+      args:
+        executable: powershell
       become: yes
       become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
       register: security_updates_output
 
     - name: Mostrar reporte en Ansible
       win_shell: Get-Content "{{ log_path }}"
-      register: security_updates_log
+      args:
+        executable: powershell
       become: yes
       become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+      register: security_updates_log
 
     - name: Mostrar actualizaciones de seguridad
       debug:
