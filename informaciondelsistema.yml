@@ -1,0 +1,17 @@
+---
+- name: Obtener información del sistema
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Obtener info del sistema
+      win_shell: Get-ComputerInfo | Select-Object CsName, WindowsVersion, WindowsBuildLabEx, OsArchitecture
+      register: system_info
+      become: yes
+      become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+
+    - name: Mostrar información del sistema
+      debug:
+        var: system_info.stdout_lines
