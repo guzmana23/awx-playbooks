@@ -1,0 +1,18 @@
+---
+- name: Listar software instalado en Windows
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Obtener software instalado
+      win_shell: Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+                 Select-Object DisplayName, DisplayVersion, Publisher
+      register: installed_software
+      become: yes
+      become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+
+    - name: Mostrar software instalado
+      debug:
+        var: installed_software.stdout_lines
