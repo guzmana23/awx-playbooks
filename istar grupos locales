@@ -1,0 +1,17 @@
+---
+- name: Listar grupos locales en Windows
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Obtener grupos locales
+      win_shell: Get-LocalGroup | Select-Object Name, Description
+      register: local_groups
+      become: yes
+      become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+
+    - name: Mostrar grupos locales
+      debug:
+        var: local_groups.stdout_lines
