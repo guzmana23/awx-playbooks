@@ -1,0 +1,17 @@
+---
+- name: Listar procesos en Windows
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+    - name: Obtener procesos activos
+      win_shell: Get-Process | Select-Object Name, Id, CPU, WS
+      register: processes
+      become: yes
+      become_method: runas
+      become_user: SISSERGUZMANA\awxupdate
+
+    - name: Mostrar procesos activos
+      debug:
+        var: processes.stdout_lines
