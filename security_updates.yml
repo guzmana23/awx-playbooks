@@ -2,7 +2,6 @@
 - name: Reporte de actualizaciones de seguridad en Windows
   hosts: all
   gather_facts: false
-
   vars:
     log_path: "C:\\Logs\\SecurityUpdates.txt"  # Ruta del log en cada host
 
@@ -12,21 +11,25 @@
       win_file:
         path: "C:\\Logs"
         state: directory
-
-    - name: Importar módulo PSWindowsUpdate
-      win_shell: Import-Module PSWindowsUpdate
+      become: yes
+      become_method: runas
 
     - name: Listar actualizaciones de seguridad disponibles
       win_shell: |
+        Import-Module PSWindowsUpdate
         Get-WindowsUpdate -Category "SecurityUpdates" -IgnoreReboot |
         Select-Object KBArticleID, Title, Size, Classification |
         Format-Table -AutoSize |
         Out-File "{{ log_path }}"
+      become: yes
+      become_method: runas
       register: security_updates_output
 
     - name: Mostrar reporte en Ansible
       win_shell: Get-Content "{{ log_path }}"
       register: security_updates_log
+      become: yes
+      become_method: runas
 
     - name: Mostrar actualizaciones de seguridad
       debug:
